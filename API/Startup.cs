@@ -1,10 +1,18 @@
+using API.Extensions;
+
+using Application.Activities;
+using Application.Core;
+
+using MediatR;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Microsoft.EntityFrameworkCore;
+
 using Persistence;
 
 namespace API
@@ -24,22 +32,15 @@ namespace API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices( IServiceCollection services )
         {
-            var connectionString = Configuration.GetConnectionString("DefaultConnection");
-            services.AddDbContext<DataContext>( options =>
-             {
-                 options.UseSqlServer( connectionString );
-             } );
-
+            
             services.AddControllers( );
-            services.AddSwaggerGen( c =>
-             {
-                 c.SwaggerDoc( "v1", new OpenApiInfo { Title = "API", Version = "v1" } );
-             } );
+            services.AddApplicationServices( Configuration );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure( IApplicationBuilder app, IWebHostEnvironment env )
         {
+            app.UseCors( "Client side" );
             if ( env.IsDevelopment( ) )
             {
                 app.UseDeveloperExceptionPage( );
